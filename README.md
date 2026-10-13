@@ -25,13 +25,13 @@ Transaction filters and the selected transaction are reflected in the URL. Openi
 
 The mock API accepts a `__scenario` query parameter on the page URL. For example:
 
-| URL | What to expect |
-| --- | --- |
-| `/transactions?__scenario=slow` | Loading skeleton, followed by the transaction list after a delay |
-| `/transactions?__scenario=empty` | Empty “No transactions yet” state |
-| `/transactions?__scenario=error` | List API error state with a retry button |
-| `/transactions?id=txn_missing&__scenario=slow` | Detail loading skeleton, followed by “Transaction not found” |
-| `/transactions?id=txn_missing&__scenario=error` | Detail API error state with a retry button |
+| URL                                             | What to expect                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| `/transactions?__scenario=slow`                 | Loading skeleton, followed by the transaction list after a delay |
+| `/transactions?__scenario=empty`                | Empty “No transactions yet” state                                |
+| `/transactions?__scenario=error`                | List API error state with a retry button                         |
+| `/transactions?id=txn_missing&__scenario=slow`  | Detail loading skeleton, followed by “Transaction not found”     |
+| `/transactions?id=txn_missing&__scenario=error` | Detail API error state with a retry button                       |
 
 Append the example query to `http://localhost:3000` while the dev server is running. Scenarios are read from the page URL through the API request’s referrer. Without a scenario, about 3% of mock API requests fail randomly. To disable random failures locally, create `.env.local` with:
 
@@ -41,15 +41,15 @@ MOCK_FAILURE_RATE=0
 
 ## Commands
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the local development server |
-| `npm run build` | Create a production build |
-| `npm run start` | Serve the production build |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | Run TypeScript without emitting files |
-| `npm test` | Run the Vitest suite |
-| `npm run format` | Format files with Prettier |
+| Command                | Description                             |
+| ---------------------- | --------------------------------------- |
+| `npm run dev`          | Start the local development server      |
+| `npm run build`        | Create a production build               |
+| `npm run start`        | Serve the production build              |
+| `npm run lint`         | Run ESLint                              |
+| `npm run typecheck`    | Run TypeScript without emitting files   |
+| `npm test`             | Run the Vitest suite                    |
+| `npm run format`       | Format files with Prettier              |
 | `npm run format:check` | Check formatting without changing files |
 
 ## Project structure

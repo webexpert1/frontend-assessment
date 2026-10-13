@@ -1,7 +1,7 @@
 .row {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) 110px 240px;
-  grid-template-areas: "icon main status end";
+  grid-template-areas: 'icon main status end';
   align-items: center;
   gap: var(--space-4);
   width: 100%;
@@ -97,8 +97,8 @@
   .row {
     grid-template-columns: 40px minmax(0, 1fr) auto;
     grid-template-areas:
-      "icon main end"
-      "icon main status";
+      'icon main end'
+      'icon main status';
     grid-template-rows: auto auto;
     padding: var(--space-3) var(--space-4);
     gap: var(--space-3);

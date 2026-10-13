@@ -17,7 +17,6 @@ export function sanitizeNarration(text: string | null | undefined): string {
     .trim()
 }
 
-
 export const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
   deposit: 'Deposit',
   withdrawal: 'Withdrawal',
@@ -66,4 +65,3 @@ export function groupTransactionsByDate(
 
   return [...groups.values()]
 }
-

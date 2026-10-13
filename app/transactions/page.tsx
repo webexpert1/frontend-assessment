@@ -5,7 +5,11 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import type { ApiErrorBody, Transaction, TransactionType, TransactionStatus } from '@/types/api'
 import { Card, Button, Input, Select, Drawer, Icon } from '@/components/ui'
 import { TransactionRow } from '@/components/transactions'
-import { getTransactions, getTransaction, type TransactionQuery as ApiTransactionQuery } from '@/lib/api/endpoints'
+import {
+  getTransactions,
+  getTransaction,
+  type TransactionQuery as ApiTransactionQuery,
+} from '@/lib/api/endpoints'
 import { TRANSACTION_TYPE_LABELS, TRANSACTION_STATUS_LABELS, groupTransactionsByDate } from '@/lib/format'
 import { cx } from '@/lib/cx'
 import styles from './page.module.css'
@@ -25,7 +29,10 @@ const TRANSACTION_STATUSES: readonly TransactionStatus[] = ['successful', 'pendi
 type TransactionQuery = ApiTransactionQuery & { page: number; limit: number }
 
 class TransactionApiError extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message)
     this.name = 'TransactionApiError'
   }
@@ -110,7 +117,10 @@ function TransactionsContent() {
 
   // Update URL helper
   const updateUrl = useCallback(
-    (params: { page?: number; type?: string; status?: string; q?: string; id?: string | null }, history: 'push' | 'replace' = 'replace') => {
+    (
+      params: { page?: number; type?: string; status?: string; q?: string; id?: string | null },
+      history: 'push' | 'replace' = 'replace'
+    ) => {
       const nextParams = new URLSearchParams()
       if (params.page && params.page > 1) nextParams.set('page', String(params.page))
       if (params.type) nextParams.set('type', params.type)
@@ -214,11 +224,14 @@ function TransactionsContent() {
     })
   }
 
-  const handleSearch = useCallback((nextQuery: string | undefined) => {
-    if (nextQuery === q) return
-    setIsFetchingNext(true)
-    updateUrl({ page: 1, type, status, q: nextQuery, id: txIdParam })
-  }, [q, type, status, txIdParam, updateUrl])
+  const handleSearch = useCallback(
+    (nextQuery: string | undefined) => {
+      if (nextQuery === q) return
+      setIsFetchingNext(true)
+      updateUrl({ page: 1, type, status, q: nextQuery, id: txIdParam })
+    },
+    [q, type, status, txIdParam, updateUrl]
+  )
 
   const handlePageChange = (newPage: number) => {
     if (newPage === page) return
@@ -316,7 +329,10 @@ function TransactionsContent() {
   // Active selected transaction: priority to list item, then fetchedDetails
   const selected = useMemo(() => {
     if (!txIdParam) return null
-    return transactions.find((t) => t.id === txIdParam) ?? (fetchedDetails?.id === txIdParam ? fetchedDetails : null)
+    return (
+      transactions.find((t) => t.id === txIdParam) ??
+      (fetchedDetails?.id === txIdParam ? fetchedDetails : null)
+    )
   }, [txIdParam, transactions, fetchedDetails])
 
   const isDetailsLoading = Boolean(txIdParam && !selected && !detailsNotFound)
@@ -457,11 +473,7 @@ function TransactionsContent() {
               <section key={group.key} className={styles.dateGroupContainer}>
                 <h2 className={styles.dateHeader}>{group.label}</h2>
                 {group.transactions.map((tx) => (
-                  <TransactionRow
-                    key={tx.id}
-                    transaction={tx}
-                    onSelect={handleSelectTransaction}
-                  />
+                  <TransactionRow key={tx.id} transaction={tx} onSelect={handleSelectTransaction} />
                 ))}
               </section>
             ))}
@@ -574,7 +586,9 @@ function TransactionsContent() {
         )}
 
         {/* Details Loaded */}
-        {!isDetailsLoading && !detailsNotFound && !detailsError && selected && <TransactionDetails transaction={selected} />}
+        {!isDetailsLoading && !detailsNotFound && !detailsError && selected && (
+          <TransactionDetails transaction={selected} />
+        )}
       </Drawer>
     </div>
   )

@@ -46,7 +46,12 @@ export function TransactionRow({ transaction: tx, onSelect }: TransactionRowProp
         />
         <span className={styles.meta}>
           {formatTime(tx.createdAt)}
-          {tx.fee > 0 && <> · Fee <Money amount={tx.fee} currency={tx.currency} /></>}
+          {tx.fee > 0 && (
+            <>
+              {' '}
+              · Fee <Money amount={tx.fee} currency={tx.currency} />
+            </>
+          )}
         </span>
       </span>
     </button>

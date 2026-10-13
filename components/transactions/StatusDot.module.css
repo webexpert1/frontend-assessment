@@ -47,11 +47,9 @@
 }
 
 /* Unknown statuses */
-.badge:not(.success):not(.successful):not(.completed):not(
-    .pending
-  ):not(.processing):not(.transfer_pending):not(.failed):not(
-    .declined
-  ):not(.cancelled):not(.canceled) {
+.badge:not(.success):not(.successful):not(.completed):not(.pending):not(.processing):not(
+    .transfer_pending
+  ):not(.failed):not(.declined):not(.cancelled):not(.canceled) {
   color: var(--color-text-muted);
   background: var(--color-bg-subtle);
 }
