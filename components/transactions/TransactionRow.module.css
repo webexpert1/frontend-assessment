@@ -1,20 +1,25 @@
 .row {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto auto;
+  grid-template-columns: 40px minmax(0, 1fr) 110px 240px;
+  grid-template-areas: 'icon main status end';
   align-items: center;
   gap: var(--space-4);
   width: 100%;
-  min-height: 68px;
-  padding: var(--space-3) var(--space-6);
+  min-height: 60px;
+  padding: 0 var(--space-6);
   border: 0;
   border-bottom: 1px solid var(--color-border);
-  background: none;
+  background: var(--color-surface);
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
-.row:last-child {
-  border-bottom: 0;
+.status {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  grid-area: status;
 }
 
 .row:hover {
@@ -22,6 +27,7 @@
 }
 
 .icon {
+  grid-area: icon;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30,9 +36,11 @@
   border-radius: var(--radius-full);
   background: var(--color-primary-soft);
   color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .main {
+  grid-area: main;
   min-width: 0;
 }
 
@@ -41,11 +49,12 @@
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
+  color: var(--color-text);
 }
 
 .narration {
   display: block;
-  margin-top: var(--space-1);
+  margin-top: 2px;
   overflow: hidden;
   font-size: var(--text-sm);
   color: var(--color-text-muted);
@@ -54,7 +63,10 @@
 }
 
 .end {
-  display: block;
+  grid-area: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   text-align: right;
 }
 
@@ -62,6 +74,11 @@
 .credit {
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+.amount {
+  color: var(--color-text);
 }
 
 .credit {
@@ -70,8 +87,40 @@
 
 .meta {
   display: block;
-  margin-top: var(--space-1);
+  margin-top: 2px;
   font-size: var(--text-xs);
   color: var(--color-text-subtle);
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'icon main end'
+      'icon main status';
+    grid-template-rows: auto auto;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .status {
+    justify-self: end;
+    align-self: start;
+  }
+
+  .meta {
+    display: none;
+  }
+
+  .end {
+    min-width: 0;
+    align-self: end;
+  }
+
+  .amount,
+  .credit {
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
 }

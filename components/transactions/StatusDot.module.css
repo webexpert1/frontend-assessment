@@ -1,18 +1,55 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* The dot inherits the status text color */
 .dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
 }
 
-.successful {
-  background: var(--color-success);
+/* Successful — green text and dot, pale green background */
+.success,
+.successful,
+.completed {
+  color: #15803d;
+  background: #e7f6ec;
 }
 
-.pending {
-  background: var(--color-warning);
+/* Pending — amber text and dot, pale amber background */
+.pending,
+.processing,
+.transfer_pending {
+  color: #c45a08;
+  background: #fff3e2;
 }
 
-.failed {
-  background: var(--color-danger);
+/* Failed — red text and dot, pale red background */
+.failed,
+.declined,
+.cancelled,
+.canceled {
+  color: #dc2626;
+  background: #fdeaea;
+}
+
+/* Unknown statuses */
+.badge:not(.success):not(.successful):not(.completed):not(.pending):not(.processing):not(
+    .transfer_pending
+  ):not(.failed):not(.declined):not(.cancelled):not(.canceled) {
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
 }

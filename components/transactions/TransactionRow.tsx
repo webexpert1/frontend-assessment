@@ -1,6 +1,6 @@
 import type { Transaction, TransactionType } from '@/types/api'
 import { Icon, type IconName, Money } from '@/components/ui'
-import { formatDateTime, TRANSACTION_TYPE_LABELS } from '@/lib/format'
+import { formatTime, formatLongText, TRANSACTION_TYPE_LABELS } from '@/lib/format'
 import { StatusDot } from './StatusDot'
 import styles from './TransactionRow.module.css'
 
@@ -31,9 +31,12 @@ export function TransactionRow({ transaction: tx, onSelect }: TransactionRowProp
       </span>
       <span className={styles.main}>
         <span className={styles.title}>{TRANSACTION_TYPE_LABELS[tx.type]}</span>
-        <span className={styles.narration} dangerouslySetInnerHTML={{ __html: tx.narration }} />
+        <span className={styles.narration}>{formatLongText(tx.narration)}</span>
       </span>
-      <StatusDot status={tx.status} />
+
+      <span className={styles.status}>
+        <StatusDot status={tx.status} />
+      </span>
       <span className={styles.end}>
         <Money
           amount={tx.amount}
@@ -42,8 +45,13 @@ export function TransactionRow({ transaction: tx, onSelect }: TransactionRowProp
           className={isCredit ? styles.credit : styles.amount}
         />
         <span className={styles.meta}>
-          {formatDateTime(tx.createdAt)}
-          {tx.fee > 0 && ` · Fee ₦${tx.fee}`}
+          {formatTime(tx.createdAt)}
+          {tx.fee > 0 && (
+            <>
+              {' '}
+              · Fee <Money amount={tx.fee} currency={tx.currency} />
+            </>
+          )}
         </span>
       </span>
     </button>
