@@ -57,6 +57,7 @@ function TransactionsContent() {
   const status = (searchParams.get('status') as TransactionStatus) || undefined
   const q = searchParams.get('q') || undefined
   const txIdParam = searchParams.get('id') || null
+  const scenario = searchParams.get('__scenario')
 
   const query = useMemo<TransactionQuery>(
     () => ({ page, limit: 20, type, status, q }),
@@ -76,6 +77,7 @@ function TransactionsContent() {
   const [detailsNotFound, setDetailsNotFound] = useState(false)
   const [detailsError, setDetailsError] = useState<string | null>(null)
   const openedFromList = useRef(false)
+  const [searchDraft, setSearchDraft] = useState(q ?? '')
 
   // Update URL helper
   const updateUrl = useCallback(
@@ -86,7 +88,6 @@ function TransactionsContent() {
       if (params.status) nextParams.set('status', params.status)
       if (params.q) nextParams.set('q', params.q)
       if (params.id) nextParams.set('id', params.id)
-      const scenario = searchParams.get('__scenario')
       if (scenario) nextParams.set('__scenario', scenario)
 
       const qs = nextParams.toString()
@@ -96,7 +97,7 @@ function TransactionsContent() {
         else router.replace(url, { scroll: false })
       })
     },
-    [pathname, router, searchParams]
+    [pathname, router, scenario]
   )
 
   // Fetch transactions whenever query changes
@@ -130,10 +131,16 @@ function TransactionsContent() {
     }
   }, [query])
 
-  // Fetch single transaction if opened via link and not currently in list
+  // Fetch the transaction for a shared/deep link. List selections already have their data.
   useEffect(() => {
     if (!txIdParam) {
       openedFromList.current = false
+      return
+    }
+
+    if (fetchedDetails?.id === txIdParam) {
+      setDetailsNotFound(false)
+      setDetailsError(null)
       return
     }
 
@@ -166,20 +173,40 @@ function TransactionsContent() {
     return () => {
       ignore = true
     }
-  }, [txIdParam])
+  }, [txIdParam, fetchedDetails])
 
-  const handleQueryChange = (key: 'q' | 'type' | 'status', value: string | undefined) => {
+  const handleQueryChange = (key: 'type' | 'status', value: string | undefined) => {
+    const nextType = key === 'type' ? value : type
+    const nextStatus = key === 'status' ? value : status
+    if (nextType === type && nextStatus === status) return
     setIsFetchingNext(true)
     updateUrl({
       page: 1,
-      type: key === 'type' ? value : type,
-      status: key === 'status' ? value : status,
-      q: key === 'q' ? value : q,
+      type: nextType,
+      status: nextStatus,
+      q,
       id: txIdParam,
     })
   }
 
+  useEffect(() => {
+    setSearchDraft(q ?? '')
+  }, [q])
+
+  useEffect(() => {
+    const nextQuery = searchDraft.trim() || undefined
+    if (nextQuery === q) return
+
+    const timeoutId = window.setTimeout(() => {
+      setIsFetchingNext(true)
+      updateUrl({ page: 1, type, status, q: nextQuery, id: txIdParam })
+    }, 300)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [searchDraft, q, type, status, txIdParam, updateUrl])
+
   const handlePageChange = (newPage: number) => {
+    if (newPage === page) return
     setIsFetchingNext(true)
     updateUrl({
       page: newPage,
@@ -191,6 +218,7 @@ function TransactionsContent() {
   }
 
   const clearFilters = () => {
+    setSearchDraft('')
     setIsFetchingNext(true)
     updateUrl({ page: 1, id: txIdParam })
   }
@@ -287,6 +315,7 @@ function TransactionsContent() {
 
   const getSubtitle = () => {
     if (isInitialLoad) return 'Loading…'
+    if (error) return 'Unable to load transactions'
     if (isFilteredEmpty) return '0 results'
     if (hasActiveFilters) {
       return meta.total === 1 ? '1 result' : `${meta.total} results`
@@ -313,8 +342,8 @@ function TransactionsContent() {
           name="q"
           placeholder="Search by reference, name or narration"
           leadingIcon="search"
-          value={q ?? ''}
-          onChange={(e) => handleQueryChange('q', e.target.value.trim() || undefined)}
+          value={searchDraft}
+          onChange={(e) => setSearchDraft(e.target.value)}
           fieldClassName={styles.searchField}
         />
         <div className={styles.filtersSelects}>
@@ -425,9 +454,6 @@ function TransactionsContent() {
                   <TransactionRow
                     key={tx.id}
                     transaction={tx}
-                    showTimeOnly
-                    safeNarration
-                    accurateFee
                     onSelect={handleSelectTransaction}
                   />
                 ))}

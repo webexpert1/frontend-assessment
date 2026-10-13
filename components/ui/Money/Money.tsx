@@ -1,8 +1,7 @@
 import type { Currency } from '@/types/api'
+import { formatMoney } from '@/lib/format/money'
 import { cx } from '@/lib/cx'
 import styles from './Money.module.css'
-
-const SYMBOLS: Record<Currency, string> = { NGN: '₦', USD: '$', GHS: 'GH₵' }
 
 export interface MoneyProps {
   /** Minor units. */
@@ -18,8 +17,7 @@ export function Money({ amount, currency, sign, className }: MoneyProps) {
   return (
     <span className={cx(styles.money, className)}>
       {prefix}
-      {SYMBOLS[currency]}
-      {(amount / 100).toLocaleString()}
+      {formatMoney(amount, currency)}
     </span>
   )
 }

@@ -19,12 +19,9 @@ const CREDIT_TYPES: TransactionType[] = ['deposit', 'transfer_in', 'conversion']
 export interface TransactionRowProps {
   transaction: Transaction
   onSelect?: (transaction: Transaction) => void
-  showTimeOnly?: boolean
-  safeNarration?: boolean
-  accurateFee?: boolean
 }
 
-export function TransactionRow({ transaction: tx, onSelect, showTimeOnly = false, safeNarration = false, accurateFee = false }: TransactionRowProps) {
+export function TransactionRow({ transaction: tx, onSelect }: TransactionRowProps) {
   const isCredit = CREDIT_TYPES.includes(tx.type)
 
   return (
@@ -34,11 +31,7 @@ export function TransactionRow({ transaction: tx, onSelect, showTimeOnly = false
       </span>
       <span className={styles.main}>
         <span className={styles.title}>{TRANSACTION_TYPE_LABELS[tx.type]}</span>
-        {safeNarration ? (
-          <span className={styles.narration}>{formatLongText(tx.narration)}</span>
-        ) : (
-          <span className={styles.narration} dangerouslySetInnerHTML={{ __html: formatLongText(tx.narration) }} />
-        )}
+        <span className={styles.narration}>{formatLongText(tx.narration)}</span>
       </span>
 
       <span className={styles.status}>
@@ -53,9 +46,7 @@ export function TransactionRow({ transaction: tx, onSelect, showTimeOnly = false
         />
         <span className={styles.meta}>
           {formatTime(tx.createdAt)}
-          {tx.fee > 0 && (
-            accurateFee ? <> · Fee <Money amount={tx.fee} currency={tx.currency} /></> : ` · Fee ₦${tx.fee}`
-          )}
+          {tx.fee > 0 && <> · Fee <Money amount={tx.fee} currency={tx.currency} /></>}
         </span>
       </span>
     </button>

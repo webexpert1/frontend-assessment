@@ -2,17 +2,6 @@ import type { ApiSuccess } from '@/types/api'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api'
 
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    public code: string,
-    message: string
-  ) {
-    super(message)
-    this.name = 'ApiError'
-  }
-}
-
 async function request<T>(path: string, init: RequestInit = {}): Promise<ApiSuccess<T>> {
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
@@ -22,7 +11,6 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<ApiSucc
     },
   })
   const body = await res.json()
-  console.log('[api]', path, body)
   return body
 }
 

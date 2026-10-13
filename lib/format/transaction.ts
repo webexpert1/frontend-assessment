@@ -2,9 +2,7 @@ import type { Transaction, TransactionStatus, TransactionType } from '@/types/ap
 import { formatRelativeDate } from './date'
 
 export const formatLongText = (narration: string) => {
-  return narration?.length > 50 ?
-    narration?.slice(0,50) + "..." :
-    narration
+  return narration.length > 50 ? `${narration.slice(0, 50)}...` : narration
 }
 
 /**
@@ -34,9 +32,8 @@ export const TRANSACTION_STATUS_LABELS: Record<TransactionStatus, string> = {
   successful: 'Successful',
   pending: 'Pending',
   failed: 'Failed',
-  reversed: 'Reversed'
+  reversed: 'Reversed',
 }
-
 
 export interface TransactionDateGroup {
   key: string
