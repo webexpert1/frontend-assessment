@@ -79,6 +79,7 @@
 .row {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) 110px 240px;
+  grid-template-areas: "icon main status end";
   align-items: center;
   gap: var(--space-4);
   width: 100%;
@@ -96,6 +97,7 @@
   display: flex;
   align-items: center;
   justify-self: start;
+  grid-area: status;
 }
 
 /* Keep your other existing styles */
@@ -105,6 +107,7 @@
 }
 
 .icon {
+  grid-area: icon;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -124,6 +127,7 @@
 }
 
 .main {
+  grid-area: main;
   min-width: 0;
 }
 
@@ -153,6 +157,7 @@
 } */
 
 .end {
+  grid-area: end;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -189,20 +194,31 @@
 @media (max-width: 768px) {
   .row {
     grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "icon main end"
+      "icon main status";
+    grid-template-rows: auto auto;
     padding: var(--space-3) var(--space-4);
     gap: var(--space-3);
   }
 
   .status {
-    display: none;
+    justify-self: end;
+    align-self: start;
   }
 
   .meta {
     display: none;
   }
 
-  .mobileStatus {
-    display: flex;
-    margin-top: 4px;
+  .end {
+    min-width: 0;
+    align-self: end;
+  }
+
+  .amount,
+  .credit {
+    font-size: var(--text-sm);
+    white-space: nowrap;
   }
 }

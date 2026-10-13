@@ -41,7 +41,9 @@ export function TransactionRow({ transaction: tx, onSelect, showTimeOnly = false
         )}
       </span>
 
-      <StatusDot status={tx.status} />
+      <span className={styles.status}>
+        <StatusDot status={tx.status} />
+      </span>
       <span className={styles.end}>
         <Money
           amount={tx.amount}

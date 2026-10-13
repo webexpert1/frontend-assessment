@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState, useMemo, useCallback, useTransition } from 'react'
+import { Suspense, useEffect, useState, useMemo, useCallback, useTransition, useRef } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import type { ApiErrorBody, Transaction, TransactionType, TransactionStatus } from '@/types/api'
 import { Card, Button, Input, Select, Drawer, Icon } from '@/components/ui'
@@ -75,23 +75,28 @@ function TransactionsContent() {
   const [fetchedDetails, setFetchedDetails] = useState<Transaction | null>(null)
   const [detailsNotFound, setDetailsNotFound] = useState(false)
   const [detailsError, setDetailsError] = useState<string | null>(null)
+  const openedFromList = useRef(false)
 
   // Update URL helper
   const updateUrl = useCallback(
-    (params: { page?: number; type?: string; status?: string; q?: string; id?: string | null }) => {
+    (params: { page?: number; type?: string; status?: string; q?: string; id?: string | null }, history: 'push' | 'replace' = 'replace') => {
       const nextParams = new URLSearchParams()
       if (params.page && params.page > 1) nextParams.set('page', String(params.page))
       if (params.type) nextParams.set('type', params.type)
       if (params.status) nextParams.set('status', params.status)
       if (params.q) nextParams.set('q', params.q)
       if (params.id) nextParams.set('id', params.id)
+      const scenario = searchParams.get('__scenario')
+      if (scenario) nextParams.set('__scenario', scenario)
 
       const qs = nextParams.toString()
       startTransition(() => {
-        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+        const url = qs ? `${pathname}?${qs}` : pathname
+        if (history === 'push') router.push(url, { scroll: false })
+        else router.replace(url, { scroll: false })
       })
     },
-    [pathname, router]
+    [pathname, router, searchParams]
   )
 
   // Fetch transactions whenever query changes
@@ -127,9 +132,14 @@ function TransactionsContent() {
 
   // Fetch single transaction if opened via link and not currently in list
   useEffect(() => {
-    if (!txIdParam) return
+    if (!txIdParam) {
+      openedFromList.current = false
+      return
+    }
 
     let ignore = false
+    setDetailsNotFound(false)
+    setDetailsError(null)
 
     getTransaction(txIdParam)
       .then((res) => {
@@ -189,14 +199,40 @@ function TransactionsContent() {
     setFetchedDetails(tx)
     setDetailsNotFound(false)
     setDetailsError(null)
-    updateUrl({ page, type, status, q, id: tx.id })
+    const opensDrawer = !txIdParam
+    openedFromList.current = opensDrawer
+    updateUrl({ page, type, status, q, id: tx.id }, opensDrawer ? 'push' : 'replace')
   }
 
   const handleCloseDrawer = () => {
     setFetchedDetails(null)
     setDetailsNotFound(false)
     setDetailsError(null)
+    if (openedFromList.current) {
+      openedFromList.current = false
+      router.back()
+      return
+    }
     updateUrl({ page, type, status, q, id: null })
+  }
+
+  const handleRetryDetails = () => {
+    if (!txIdParam) return
+    setDetailsError(null)
+    setDetailsNotFound(false)
+    setFetchedDetails(null)
+    getTransaction(txIdParam)
+      .then((res) => {
+        setFetchedDetails(unwrapResponse<Transaction>(res))
+      })
+      .catch((err) => {
+        if (err instanceof TransactionApiError && err.code === 'NOT_FOUND') {
+          setDetailsNotFound(true)
+          setDetailsError(null)
+        } else {
+          setDetailsError(err instanceof Error ? err.message : 'Failed to load transaction details')
+        }
+      })
   }
 
   const handleRetry = () => {
@@ -238,7 +274,7 @@ function TransactionsContent() {
   // Active selected transaction: priority to list item, then fetchedDetails
   const selected = useMemo(() => {
     if (!txIdParam) return null
-    return transactions.find((t) => t.id === txIdParam) ?? fetchedDetails
+    return transactions.find((t) => t.id === txIdParam) ?? (fetchedDetails?.id === txIdParam ? fetchedDetails : null)
   }, [txIdParam, transactions, fetchedDetails])
 
   const isDetailsLoading = Boolean(txIdParam && !selected && !detailsNotFound)
@@ -464,7 +500,7 @@ function TransactionsContent() {
             </div>
             <div className={styles.skeletonDivider} />
             <div className={styles.detailsSkeletonList}>
-              {[1, 2, 3, 4, 5].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <div key={i} className={styles.detailsSkeletonRow}>
                   <div className={styles.skeletonDrawerLabel} />
                   <div className={styles.skeletonDrawerValue} />
@@ -497,6 +533,11 @@ function TransactionsContent() {
             </div>
             <h3 className={styles.emptyStateTitle}>We couldn&apos;t load this transaction</h3>
             <p className={styles.emptyStateSubtitle}>{detailsError}</p>
+            <div className={styles.emptyStateAction}>
+              <Button variant="primary" iconLeft="refresh" onClick={handleRetryDetails}>
+                Try again
+              </Button>
+            </div>
           </div>
         )}
 

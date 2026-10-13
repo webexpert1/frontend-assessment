@@ -33,6 +33,17 @@ export function Navbar() {
         </nav>
         <UserMenu />
       </div>
+      <nav className={styles.mobileLinks} aria-label="Main">
+        {LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cx(styles.link, pathname === link.href && styles.active)}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
     </header>
   )
 }

@@ -314,6 +314,8 @@
   .detailsSkeleton {
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    min-height: 100%;
     padding: var(--space-2) 0;
   }
   
@@ -397,6 +399,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    min-height: 100%;
     text-align: center;
     padding: 64px 0;
   }
