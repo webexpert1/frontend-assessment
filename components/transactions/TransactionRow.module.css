@@ -1,4 +1,4 @@
-.row {
+/* .row {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) auto auto;
   align-items: center;
@@ -74,4 +74,135 @@
   font-size: var(--text-xs);
   color: var(--color-text-subtle);
   white-space: nowrap;
+} */
+
+.row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 110px 240px;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 60px;
+  padding: 0 var(--space-6);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+}
+
+/* Keep your other existing styles */
+
+.row:hover {
+  background: var(--color-bg-subtle);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.initials {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.main {
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+}
+
+.narration {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Keeps the badge naturally aligned near the text */
+/* .status {
+  display: flex;
+  align-items: center;
+  justify-self: start; 
+} */
+
+.end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.amount,
+.credit {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+.amount {
+  color: var(--color-text);
+}
+
+.credit {
+  color: var(--color-success);
+}
+
+.meta {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.mobileStatus {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .status {
+    display: none;
+  }
+
+  .meta {
+    display: none;
+  }
+
+  .mobileStatus {
+    display: flex;
+    margin-top: 4px;
+  }
 }
