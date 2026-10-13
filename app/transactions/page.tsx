@@ -38,6 +38,36 @@ function unwrapResponse<T>(response: unknown): T {
   return body.data as T
 }
 
+function TransactionSearch({
+  value,
+  onSearch,
+}: {
+  value: string
+  onSearch: (query: string | undefined) => void
+}) {
+  const [draft, setDraft] = useState(value)
+
+  useEffect(() => {
+    const nextQuery = draft.trim() || undefined
+    if (nextQuery === (value || undefined)) return
+
+    const timeoutId = window.setTimeout(() => onSearch(nextQuery), 300)
+    return () => window.clearTimeout(timeoutId)
+  }, [draft, value, onSearch])
+
+  return (
+    <Input
+      label="Search"
+      name="q"
+      placeholder="Search by reference, name or narration"
+      leadingIcon="search"
+      value={draft}
+      onChange={(event) => setDraft(event.target.value)}
+      fieldClassName={styles.searchField}
+    />
+  )
+}
+
 interface PageMeta {
   page: number
   limit: number
@@ -77,7 +107,6 @@ function TransactionsContent() {
   const [detailsNotFound, setDetailsNotFound] = useState(false)
   const [detailsError, setDetailsError] = useState<string | null>(null)
   const openedFromList = useRef(false)
-  const [searchDraft, setSearchDraft] = useState(q ?? '')
 
   // Update URL helper
   const updateUrl = useCallback(
@@ -139,14 +168,10 @@ function TransactionsContent() {
     }
 
     if (fetchedDetails?.id === txIdParam) {
-      setDetailsNotFound(false)
-      setDetailsError(null)
       return
     }
 
     let ignore = false
-    setDetailsNotFound(false)
-    setDetailsError(null)
 
     getTransaction(txIdParam)
       .then((res) => {
@@ -189,21 +214,11 @@ function TransactionsContent() {
     })
   }
 
-  useEffect(() => {
-    setSearchDraft(q ?? '')
-  }, [q])
-
-  useEffect(() => {
-    const nextQuery = searchDraft.trim() || undefined
+  const handleSearch = useCallback((nextQuery: string | undefined) => {
     if (nextQuery === q) return
-
-    const timeoutId = window.setTimeout(() => {
-      setIsFetchingNext(true)
-      updateUrl({ page: 1, type, status, q: nextQuery, id: txIdParam })
-    }, 300)
-
-    return () => window.clearTimeout(timeoutId)
-  }, [searchDraft, q, type, status, txIdParam, updateUrl])
+    setIsFetchingNext(true)
+    updateUrl({ page: 1, type, status, q: nextQuery, id: txIdParam })
+  }, [q, type, status, txIdParam, updateUrl])
 
   const handlePageChange = (newPage: number) => {
     if (newPage === page) return
@@ -218,7 +233,6 @@ function TransactionsContent() {
   }
 
   const clearFilters = () => {
-    setSearchDraft('')
     setIsFetchingNext(true)
     updateUrl({ page: 1, id: txIdParam })
   }
@@ -337,15 +351,7 @@ function TransactionsContent() {
 
       {/* Filter bar - stays in place in every state */}
       <div className={styles.filtersRow}>
-        <Input
-          label="Search"
-          name="q"
-          placeholder="Search by reference, name or narration"
-          leadingIcon="search"
-          value={searchDraft}
-          onChange={(e) => setSearchDraft(e.target.value)}
-          fieldClassName={styles.searchField}
-        />
+        <TransactionSearch key={q ?? ''} value={q ?? ''} onSearch={handleSearch} />
         <div className={styles.filtersSelects}>
           <Select
             label="Type"
