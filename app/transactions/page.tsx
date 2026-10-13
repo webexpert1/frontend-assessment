@@ -9,7 +9,7 @@ import { getTransactions, getTransaction, type TransactionQuery as ApiTransactio
 import { TRANSACTION_TYPE_LABELS, TRANSACTION_STATUS_LABELS, groupTransactionsByDate } from '@/lib/format'
 import { cx } from '@/lib/cx'
 import styles from './page.module.css'
-import TransactionDetails from '@/components/transactions/TransactionDetails'
+import { TransactionDetails } from '@/components/transactions/TransactionDetails'
 
 const TRANSACTION_TYPES: readonly TransactionType[] = [
   'deposit',

@@ -7,6 +7,18 @@ export const formatLongText = (narration: string) => {
     narration
 }
 
+/**
+ * Strips HTML tags and collapses whitespace from upstream narrations
+ * (e.g. `Bill payment - Spectranet <img src="x" onerror="...">` -> `Bill payment - Spectranet`)
+ */
+export function sanitizeNarration(text: string | null | undefined): string {
+  if (!text) return ''
+  return text
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 
 export const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
   deposit: 'Deposit',
